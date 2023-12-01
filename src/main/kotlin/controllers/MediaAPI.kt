@@ -26,8 +26,8 @@ class MediaAPI() {
         // if the media exists, use the media details passed as parameters to update the found media in the ArrayList.
         if ((foundMedia != null) && (media != null)) {
             foundMedia.mediaTitle = media.mediaTitle
-            foundMedia.mediaPriority = media.mediaPriority
-            foundMedia.mediaCategory = media.mediaCategory
+            foundMedia.mediaRuntime = media.mediaRuntime
+            foundMedia.mediaGenre = media.mediaGenre
             return true
         }
 
@@ -35,26 +35,19 @@ class MediaAPI() {
         return false
     }
 
-    // ----------------------------------------------
-    //  LISTING METHODS FOR MEDIA ArrayList
-    // ----------------------------------------------
     fun listAllMedias() =
         if (medias.isEmpty()) "No medias stored"
         else formatListString(medias)
 
-    // ----------------------------------------------
-    //  COUNTING METHODS FOR MEDIA ArrayList
-    // ----------------------------------------------
     fun numberOfMedias() = medias.size
 
-    // ----------------------------------------------
-    //  SEARCHING METHODS
-    // ---------------------------------------------
-    fun findMedia(mediaId : Int) =  medias.find{ media -> media.mediaId == mediaId }
+    fun findMedia(mediaId: Int): Media? {
+        return medias.find { media -> media.mediaId == mediaId }
+    }
+
 
     fun searchMediasByTitle(searchString: String) =
        formatListString(
             medias.filter { media -> media.mediaTitle.contains(searchString, ignoreCase = true) }
         )
-
     }

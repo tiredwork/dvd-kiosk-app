@@ -3,16 +3,21 @@ package models
 import utils.Utilities
 
 data class Media(var mediaId: Int = 0,
-                var mediaTitle: String,
-                var mediaPriority: Int,
-                var mediaCategory: String,
-                var isMediaArchived: Boolean = false)
+                 var mediaTitle: String,
+                 var mediaRuntime: Int,
+                 var mediaGenre: String,
+                 var isRented: Boolean)
 {
-    private var lastItemId = 0
-    private fun getItemId() = lastItemId++
+
+    private var lastMediaId = 0
+    private fun getNextMediaId() = lastMediaId++
 
     override fun toString(): String {
-        val archived = if (isMediaArchived) 'Y' else 'N'
-        return "$mediaId: $mediaTitle, Priority($mediaPriority), Category($mediaCategory), Archived($archived)"
+        return "$mediaId: $mediaTitle, Runtime: $mediaRuntime, Category: $mediaGenre, Is it Rented?: $isRented"
     }
+
+    fun formatListString(list: List<Any>): String {
+        return list.joinToString("\n")
+    }
+
 }
