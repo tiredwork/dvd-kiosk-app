@@ -1,6 +1,6 @@
 # dvd-kiosk-app
 
-This is a project for the Software Development Tools assignment 3. It is a rental kisosk system allowing you to view and rent media like movies, CDs, and vinyls.
+This is a project for the Software Development Tools assignment 3. It is a rental kiosk system allowing you to view and rent media like movies, CDs, and vinyls.
  
 <!-- GETTING STARTED -->
 ## Getting Started
