@@ -1,15 +1,24 @@
 package controllers
 
 import models.Customer
-import utils.Utilities.formatListString
+import persistence.Serializer
 import java.util.ArrayList
 
-class CustomerAPI() {
+class CustomerAPI(serializerType: Serializer) {
 
+    // Private properties
+    private var serializer: Serializer = serializerType
     private var customers = ArrayList<Customer>()
 
     private var lastId = 0
     private fun getId() = lastId++
+
+    private fun formatListString(customerToFormat: ArrayList<Customer>): String =
+        customerToFormat
+            .joinToString(separator = "\n") { customer ->
+                customers.indexOf(customer).toString() + ": " + customer.toString()
+            }
+
 
     fun add(customer: Customer): Boolean {
         customer.customerId = getId()
@@ -33,13 +42,9 @@ class CustomerAPI() {
         return false
     }
 
-    private fun formatCustomerList(list: List<Customer>): String {
-        return list.joinToString("\n")
-    }
-
     fun listAllCustomers() =
         if (customers.isEmpty()) "No customers stored"
-        else formatCustomerList(customers)
+        else formatListString(customers)
 
 
     fun numberOfCustomers() = customers.size
@@ -47,5 +52,15 @@ class CustomerAPI() {
     fun findCustomer(customerId: Int): Customer? {
         return customers.find { customer -> customer.customerId == customerId }
 
+    }
+
+    @Throws(Exception::class)
+    fun load() {
+        customers = serializer.read() as ArrayList<Customer>
+    }
+
+    @Throws(Exception::class)
+    fun save() {
+        serializer.write(customers)
     }
 }
