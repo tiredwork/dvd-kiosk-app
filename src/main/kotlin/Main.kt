@@ -4,7 +4,6 @@ import models.Customer
 import models.Media
 import mu.KotlinLogging
 import persistence.JSONSerializer
-import utils.ScannerInput
 import utils.ScannerInput.readNextInt
 import utils.ScannerInput.readNextLine
 import java.io.File
@@ -12,28 +11,30 @@ import java.util.*
 import kotlin.system.exitProcess
 
 private val mediaAPI = MediaAPI(JSONSerializer(File("media.json")))
-private val CustomerAPI = CustomerAPI(JSONSerializer(File("customer.json")))
+private val customerAPI = CustomerAPI(JSONSerializer(File("customer.json")))
 
 // Initialize a logger for logging messages
 private val logger = KotlinLogging.logger {}
 
 var lastMediaId = 0 //MediaID incrementation
+var lastCustomerId = 0 //CustomerID incrementation
 fun main() = runMenu()
 
 fun runMenu() {
     do {
         when (val option = mainMenu()) {
             1 -> listAllMedias()
-            2 -> searchMedias()
-            3 -> returnRentedMedia()
-            4 -> viewCustomer()
+            2 -> rentMediaMenu()
+            3 -> searchMedias()
+            4 -> createNewCustomer()
+            5 -> returnRentedMedia()
+            6 -> viewCustomer()
             0 -> exitApp()
             998 -> secretStaffMenu()
             else -> println("Invalid menu choice: $option")
         }
     } while (true)
 }
-
 
 fun mainMenu() = readNextInt(
         """ 
@@ -46,10 +47,12 @@ fun mainMenu() = readNextInt(
          > ║  ╚═════╝╚═╝╚═╝  ╚═══╝╚══════╝╚═╝     ╚══════╝╚══════╝╚═╝  ╚═╝ ║
          > ╠═══════════════════════════════════════════════════════════════╣
          > ║  [1] View all available media to rent                         ║
-         > ║  [2] Search media by term                                     ║
+         > ║  [2] Rent out media                                           ║
+         > ║  [3] Search media by term                                     ║
          > ╠═══════════════════════════════════════════════════════════════╣
-         > ║  [3] Return rented media                                      ║
-         > ║  [4] View account                                             ║
+         > ║  [4] Create new account                                       ║
+         > ║  [5] Return rented media                                      ║
+         > ║  [6] View account                                             ║
          > ╠═══════════════════════════════════════════════════════════════╣
          > ║  [0] Exit                                                     ║
          > ╚═══════════════════════════════════════════════════════════════╝                 
@@ -113,8 +116,6 @@ fun addMedia() {
     secretStaffMenu()
 }
 
-fun listAllMedias() = println(mediaAPI.listAllMedias())
-
 fun updateMedia() {
     if (mediaAPI.numberOfMedias() > 0) {
         val id = readNextInt("Enter the id of the media to update: ")
@@ -153,6 +154,9 @@ fun deleteMedia() {
         }
     }
 }
+
+fun listAllMedias() = println(mediaAPI.listAllMedias())
+
 fun searchMedias() {
     val searchTitle = readNextLine("Enter the description to search by: ")
     val searchResults = mediaAPI.searchMediasByTitle(searchTitle)
@@ -163,25 +167,40 @@ fun searchMedias() {
     }
 }
 
-fun returnRentedMedia() {
+fun rentMediaMenu() {
     val customerId = readNextInt("Enter the customer id: ")
-    val mediaId = readNextInt("Enter the media id to return: ")
-    val customer = CustomerAPI.findCustomer(customerId) // Use the findCustomer function from CustomerAPI
-    if (customer != null) {
-        val media = mediaAPI.findMedia(mediaId)
-        if (media != null) {
-            customer.returnRentedMedia(media) // Call returnRentedMedia on the customer instance
-        } else {
-            println("Media not found.")
-        }
+    val mediaId = readNextInt("Enter the media id to rent: ")
+    val customer = customerAPI.findCustomer(customerId)
+    val media = mediaAPI.findMedia(mediaId)
+    if (customer != null && media != null && !media.isRented) {
+        customer.rentedMedia.add(mediaId)
+        media.isRented = true
+        println("Media rented successfully.")
     } else {
-        println("Customer not found.")
+        println("Failed to rent media.")
     }
 }
 
+fun returnRentedMedia() {
+    val customerId = readNextInt("Enter the customer id: ")
+    val mediaId = readNextInt("Enter the media id to return: ")
+    val customer = customerAPI.findCustomer(customerId)
+    val media = mediaAPI.findMedia(mediaId)
+    if (customer != null && media != null && media.isRented) {
+        customer.rentedMedia.remove(mediaId)
+        media.isRented = false
+        println("Media returned successfully.")
+    } else {
+        println("Failed to return media.")
+    }
+}
+
+
+// Customer functions
+
 fun viewCustomer() {
     val customerId = readNextInt("Enter the customer id: ")
-    val customer = CustomerAPI.findCustomer(customerId) // Use the findCustomer function from CustomerAPI
+    val customer = customerAPI.findCustomer(customerId) // Use the findCustomer function from CustomerAPI
     if (customer != null) {
         println(customer)
     } else {
@@ -189,9 +208,35 @@ fun viewCustomer() {
     }
 }
 
+fun createNewCustomer() {
+    val customerId = lastCustomerId++
+    val fName = readNextLine("Enter the first name of the customer: ")
+    val lName = readNextLine("Enter the last name of the customer: ")
+    val email = readNextLine("Enter the email of the customer: ")
+    val phoneNo = readNextLine("Enter the phone number of the customer: ")
+    val postCode = readNextLine("Enter the postal code of the customer: ")
+    val customer = Customer(
+        customerId = customerId,
+        fName = fName,
+        lName = lName,
+        email = email,
+        phoneNo = phoneNo,
+        postCode = postCode
+    )
+    val isAdded = customerAPI.add(customer)
+
+    if (isAdded) {
+        println("Customer added successfully")
+    } else {
+        println("Failed to add customer")
+    }
+}
+
+
+
 fun saveCustomer() {
     try {
-        CustomerAPI.save()
+        customerAPI.save()
         println("Save successful")
     } catch (e: Exception) {
         System.err.println("Error writing to file: $e")
@@ -200,7 +245,7 @@ fun saveCustomer() {
 
 fun loadCustomer() {
     try {
-        CustomerAPI.load()
+        customerAPI.load()
         println("Load successful")
     } catch (e: Exception) {
         System.err.println("Error reading from file: $e")
