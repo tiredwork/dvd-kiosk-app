@@ -1,16 +1,24 @@
 package controllers
 
 import models.Media
+import persistence.Serializer
 import utils.Utilities.formatListString
 import java.util.ArrayList
 
-class MediaAPI() {
+class MediaAPI(serializerType: Serializer) {
 
+    // Private properties
+    private var serializer: Serializer = serializerType
     private var medias = ArrayList<Media>()
 
     private var lastId = 0
     private fun getId() = lastId++
 
+    private fun formatListString(mediaToFormat: List<Media>): String =
+        mediaToFormat
+            .joinToString(separator = "\n") { media ->
+                medias.indexOf(media).toString() + ": " + media.toString()
+            }
 
     fun add(media: Media): Boolean {
         media.mediaId = getId()
@@ -45,9 +53,17 @@ class MediaAPI() {
         return medias.find { media -> media.mediaId == mediaId }
     }
 
-
     fun searchMediasByTitle(searchString: String) =
        formatListString(
             medias.filter { media -> media.mediaTitle.contains(searchString, ignoreCase = true) }
         )
+    @Throws(Exception::class)
+    fun load() {
+        medias = serializer.read() as ArrayList<Media>
     }
+
+    @Throws(Exception::class)
+    fun save() {
+        serializer.write(medias)
+    }
+}

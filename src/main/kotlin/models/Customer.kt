@@ -1,9 +1,5 @@
 package models
 
-import controllers.CustomerAPI
-import controllers.MediaAPI
-import utils.ScannerInput.readNextInt
-
 data class Customer(
     var customerId: Int,
     var fName: String,
@@ -59,4 +55,9 @@ data class Customer(
             println("This media item is not in the customer's rented list.")
         }
     }
+
+    fun joinToString(separator: String, param: (Any) -> String): String {
+        return "Customer ID: $customerId, First Name: $fName, Last Name: $lName, Email: $email, Phone Number: $phoneNo, Postcode: $postCode"
+    }
+
 }
