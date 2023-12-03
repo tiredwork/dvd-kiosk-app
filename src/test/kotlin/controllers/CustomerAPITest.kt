@@ -83,6 +83,7 @@ class CustomerAPITest {
 
         @Nested
         inner class ListAllCustomers {
+
             @Test
             fun `listAllCustomers returns No Customers Stored message when ArrayList is empty`() {
                 assertEquals(0, emptyCustomers!!.numberOfCustomers())
@@ -185,8 +186,10 @@ class CustomerAPITest {
                 assertTrue(customer.rentedMedia.contains(1))
             }
         }
+
         @Nested
         inner class StringFormat {
+
             @Test
             fun `Testing formatListString`() {
                 val customer = Customer(0, "Jane", "Smith", "jane.smith@email.com", "123-456-789", "12345", rentedMedia = mutableListOf(0, 1))
