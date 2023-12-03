@@ -19,22 +19,24 @@ class CustomerAPI(private val serializerType: Serializer) {
                 customers.indexOf(customer).toString() + ": " + customer.toString()
             }
 
-
     fun add(customer: Customer): Boolean {
         customer.customerId = getId()
         return customers.add(customer)
     }
 
     fun listAllCustomers() =
-        if (customers.isEmpty()) "No customers stored"
-        else formatListString(customers)
+        if (customers.isEmpty()) {
+            "No customers stored"
+        } else {
+            formatListString(customers)
+        }
 
     fun numberOfCustomers() = customers.size
 
     fun findCustomer(customerId: Int): Customer? {
         return customers.find { customer -> customer.customerId == customerId }
-
     }
+
     @Throws(Exception::class)
     fun load() {
         customers = serializer.read() as ArrayList<Customer>

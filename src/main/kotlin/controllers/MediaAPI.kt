@@ -44,8 +44,11 @@ class MediaAPI(serializerType: Serializer) {
     }
 
     fun listAllMedias() =
-        if (medias.isEmpty()) "No medias stored"
-        else formatListString(medias)
+        if (medias.isEmpty()) {
+            "No medias stored"
+        } else {
+            formatListString(medias)
+        }
 
     fun numberOfMedias() = medias.size
 
@@ -54,9 +57,10 @@ class MediaAPI(serializerType: Serializer) {
     }
 
     fun searchMediasByTitle(searchString: String) =
-       formatListString(
+        formatListString(
             medias.filter { media -> media.mediaTitle.contains(searchString, ignoreCase = true) }
         )
+
     @Throws(Exception::class)
     fun load() {
         medias = serializer.read() as ArrayList<Media>

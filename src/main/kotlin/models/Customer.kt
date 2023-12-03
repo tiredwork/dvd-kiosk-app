@@ -8,7 +8,7 @@ data class Customer(
     var phoneNo: String,
     var postCode: String,
     var rentedMedia: MutableList<Int> = mutableListOf()
-){
+) {
     override fun toString(): String {
         return "Customer Number: $customerId, Name: '$fName $lName', Email: '$email', Phone No.: '$phoneNo', Postcode: '$postCode', IDs of rented media: $rentedMedia"
     }

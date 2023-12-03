@@ -11,11 +11,10 @@ object Utilities {
     @JvmStatic
     fun formatListString(mediasToFormat: List<Media>): String =
         mediasToFormat
-            .joinToString(separator = "\n") { media ->  "$media" }
+            .joinToString(separator = "\n") { media -> "$media" }
 
     @JvmStatic
     fun formatSetString(itemsToFormat: Set<Customer>): String =
         itemsToFormat
-            .joinToString(separator = "\n") { item ->  "\t$item" }
-
+            .joinToString(separator = "\n") { item -> "\t$item" }
 }

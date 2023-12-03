@@ -7,7 +7,7 @@ import persistence.JSONSerializer
 import utils.ScannerInput.readNextInt
 import utils.ScannerInput.readNextLine
 import java.io.File
-import java.util.*
+import java.util.Locale
 import kotlin.system.exitProcess
 
 private val mediaAPI = MediaAPI(JSONSerializer(File("media.json")))
@@ -37,7 +37,7 @@ fun runMenu() {
 }
 
 fun mainMenu() = readNextInt(
-        """ 
+    """ 
          > ╔═══════════════════════════════════════════════════════════════╗
          > ║  ██████╗██╗███╗   ██╗███████╗██████╗ ██╗     ███████╗██╗  ██╗ ║
          > ║ ██╔════╝██║████╗  ██║██╔════╝██╔══██╗██║     ██╔════╝╚██╗██╔╝ ║
@@ -58,7 +58,7 @@ fun mainMenu() = readNextInt(
          > ║  [0] Exit                                                     ║
          > ╚═══════════════════════════════════════════════════════════════╝                 
          > ==>> """.trimMargin(">")
-    )
+)
 
 fun secretStaffMenu() {
     val password = "secret"
@@ -82,7 +82,8 @@ fun secretStaffMenu() {
         > ║   5) Load all databases       ║
         > ║   10) Back to main menu       ║
         > ╚═══════════════════════════════╝
-        > ==>> """.trimMargin(">"))
+        > ==>> """.trimMargin(">")
+    )
 
     when (customerId) {
         1 -> addMedia()
@@ -105,10 +106,10 @@ fun saveAll() {
     saveMedia()
 }
 
-//Media functions
+// Media functions
 
 fun addMedia() {
-    val mediaId = mediaAPI.numberOfMedias() +1
+    val mediaId = mediaAPI.numberOfMedias() + 1
     val mediaTitle = readNextLine("Enter a title for the media: ")
     val mediaRuntime = readNextLine("Enter the runtime for the media: ")
     val mediaGenre = readNextLine("Enter the genre for the media: ")
@@ -145,7 +146,7 @@ fun updateMedia() {
             media.mediaRuntime = mediaRuntime
             media.mediaGenre = mediaGenre
 
-            if (mediaAPI.update(id, media)){
+            if (mediaAPI.update(id, media)) {
                 println("Update Successful")
             } else {
                 println("Update Failed")
@@ -156,7 +157,6 @@ fun updateMedia() {
         secretStaffMenu()
     }
 }
-
 
 fun deleteMedia() {
     if (mediaAPI.numberOfMedias() > 0) {

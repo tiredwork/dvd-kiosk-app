@@ -1,14 +1,12 @@
 package models
 
-import utils.Utilities
-
-data class Media(var mediaId: Int,
-                 var mediaTitle: String,
-                 var mediaRuntime: String,
-                 var mediaGenre: String,
-                 var isRented: Boolean,
-)
-{
+data class Media(
+    var mediaId: Int,
+    var mediaTitle: String,
+    var mediaRuntime: String,
+    var mediaGenre: String,
+    var isRented: Boolean
+) {
 
     override fun toString(): String {
         return "Media ID: $mediaId: '$mediaTitle', Runtime: '$mediaRuntime', Category: '$mediaGenre', Is it Rented?: $isRented"

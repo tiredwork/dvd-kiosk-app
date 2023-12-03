@@ -2,13 +2,13 @@ import controllers.CustomerAPI
 import controllers.MediaAPI
 import models.Media
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import persistence.JSONSerializer
 import java.io.File
-import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class MediaAPITest {
 
@@ -82,7 +82,6 @@ class MediaAPITest {
                 assertEquals(0, mediaAPIEmpty.numberOfMedias())
                 assertTrue(mediaAPIEmpty.listAllMedias().lowercase().contains("no medias stored"))
             }
-
 
             @Test
             fun `listAllMedia returns Media when ArrayList has Media stored`() {
