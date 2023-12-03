@@ -15,8 +15,15 @@ private val customerAPI = CustomerAPI(JSONSerializer(File("customer.json")))
 
 private val logger = KotlinLogging.logger {}
 var isDataLoaded = false
+
+/**
+ * The main function that runs the menu.
+ */
 fun main() = runMenu()
 
+/**
+ * Function to run the main menu.
+ */
 fun runMenu() {
     if (!isDataLoaded) {
         loadAll()
@@ -39,6 +46,10 @@ fun runMenu() {
     } while (true)
 }
 
+/**
+ * Function to display the main menu and read the user's choice.
+ * @return The user's menu choice as an Int.
+ */
 fun mainMenu() = readNextInt(
     """ 
          > ╔═══════════════════════════════════════════════════════════════╗
@@ -63,6 +74,9 @@ fun mainMenu() = readNextInt(
          > ==>> """.trimMargin(">")
 )
 
+/**
+ * Function to display the secret staff menu and read the user's choice.
+ */
 fun secretStaffMenu() {
     val password = "secret"
     val inputPassword = readNextLine("Enter the password: ")
@@ -99,11 +113,19 @@ fun secretStaffMenu() {
     }
 }
 
+// Persistence functions
+
+/**
+ * Function to load all data.
+ */
 fun loadAll() {
     loadCustomer()
     loadMedia()
 }
 
+/**
+ * Function to save all data.
+ */
 fun saveAll() {
     saveCustomer()
     saveMedia()
@@ -111,6 +133,9 @@ fun saveAll() {
 
 // Media functions
 
+/**
+ * Function to add a new media.
+ */
 fun addMedia() {
     val mediaId = mediaAPI.numberOfMedias() + 1
     val mediaTitle = readNextLine("Enter a title for the media: ")
@@ -136,6 +161,9 @@ fun addMedia() {
     secretStaffMenu()
 }
 
+/**
+ * Function to update an existing media.
+ */
 fun updateMedia() {
     if (mediaAPI.numberOfMedias() > 0) {
         val id = readNextInt("Enter the id of the media to update: ")
@@ -155,12 +183,15 @@ fun updateMedia() {
                 println("Update Failed")
             }
         } else {
-            println("There are no medias for this index number")
+            println("There are no media found.")
         }
         secretStaffMenu()
     }
 }
 
+/**
+ * Function to delete a media.
+ */
 fun deleteMedia() {
     if (mediaAPI.numberOfMedias() > 0) {
         val id = readNextInt("Enter the id of the media to delete: ")
@@ -174,8 +205,14 @@ fun deleteMedia() {
     }
 }
 
+/**
+ * Function to list all medias.
+ */
 fun listAllMedias() = println(mediaAPI.listAllMedias())
 
+/**
+ * Function to search medias by title.
+ */
 fun searchMedias() {
     val searchTitle = readNextLine("Enter the description to search by: ")
     val searchResults = mediaAPI.searchMediasByTitle(searchTitle)
@@ -186,6 +223,9 @@ fun searchMedias() {
     }
 }
 
+/**
+ * Function to rent a media.
+ */
 fun rentMediaMenu() {
     val customerId = readNextInt("Enter the customer id: ")
     val customer = customerAPI.findCustomer(customerId)
@@ -216,6 +256,9 @@ fun rentMediaMenu() {
     }
 }
 
+/**
+ * Function to return a rented media.
+ */
 fun returnRentedMedia() {
     val customerId = readNextInt("Enter the customer id: ")
     val customer = customerAPI.findCustomer(customerId)
@@ -248,9 +291,12 @@ fun returnRentedMedia() {
 
 // Customer functions
 
+/**
+ * Function to view a customer's details.
+ */
 fun viewCustomer() {
     val customerId = readNextInt("Enter the customer id: ")
-    val customer = customerAPI.findCustomer(customerId) // Use the findCustomer function from CustomerAPI
+    val customer = customerAPI.findCustomer(customerId)
     if (customer != null) {
         println(customer)
     } else {
@@ -258,6 +304,9 @@ fun viewCustomer() {
     }
 }
 
+/**
+ * Function to create a new customer.
+ */
 fun createNewCustomer() {
     val customerId = customerAPI.numberOfCustomers() + 1
     val fName = readNextLine("Enter the first name of the customer: ")
@@ -284,6 +333,9 @@ fun createNewCustomer() {
 
 // Persistence functions
 
+/**
+ * Function to save customer data.
+ */
 fun saveCustomer() {
     try {
         customerAPI.save()
@@ -293,6 +345,9 @@ fun saveCustomer() {
     }
 }
 
+/**
+ * Function to load customer data.
+ */
 fun loadCustomer() {
     try {
         customerAPI.load()
@@ -302,6 +357,9 @@ fun loadCustomer() {
     }
 }
 
+/**
+ * Function to save media data.
+ */
 fun saveMedia() {
     try {
         mediaAPI.save()
@@ -311,6 +369,9 @@ fun saveMedia() {
     }
 }
 
+/**
+ * Function to load media data.
+ */
 fun loadMedia() {
     try {
         mediaAPI.load()
@@ -320,6 +381,9 @@ fun loadMedia() {
     }
 }
 
+/**
+ * Function to exit the application.
+ */
 fun exitApp() {
     saveCustomer()
     saveMedia()

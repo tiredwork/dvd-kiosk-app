@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test
 
 class CustomerTest {
 
+    /**
+     * Test case for the toString method of the Customer class.
+     */
     @Test
     fun `test toString method`() {
         val customer = Customer(0, "Jane", "Smith", "jane.smith@email.com", "123-456-789", "12345", rentedMedia = mutableListOf(0, 1))
@@ -12,6 +15,9 @@ class CustomerTest {
         assertEquals(expected, customer.toString())
     }
 
+    /**
+     * Test case for the formatListString method of the Customer class.
+     */
     @Test
     fun `test formatListString method`() {
         val customer = Customer(0, "Jane", "Smith", "jane.smith@email.com", "123-456-789", "12345", rentedMedia = mutableListOf(0, 1))
