@@ -43,9 +43,9 @@ fun runMenu() {
             5 -> returnRentedMedia()
             6 -> viewCustomer()
             0 -> exitApp()
-            997 -> loadAll() //Debug Load all
-            998 -> saveAll() //Debug Save all
-            999 -> secretStaffMenu() //Secret Staff menu
+            997 -> loadAll() // Debug Load all
+            998 -> saveAll() // Debug Save all
+            999 -> secretStaffMenu() // Secret Staff menu
             else -> println("Invalid menu choice: $option")
         }
     } while (true)
@@ -339,17 +339,16 @@ fun createNewCustomer() {
 // https://stackoverflow.com/questions/72117435/kotlin-android-email-validation
 val EMAIL_ADDRESS_PATTERN = Pattern.compile(
     "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
-            "\\@" +
-            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-            "(" +
-            "\\." +
-            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
-            ")+"
+        "\\@" +
+        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+        "(" +
+        "\\." +
+        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+        ")+"
 )
-fun isValidEmail(str: String): Boolean{
+fun isValidEmail(str: String): Boolean {
     return EMAIL_ADDRESS_PATTERN.matcher(str).matches()
 }
-
 
 // Persistence functions
 
