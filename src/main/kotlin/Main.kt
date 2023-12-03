@@ -16,8 +16,6 @@ private val customerAPI = CustomerAPI(JSONSerializer(File("customer.json")))
 // Initialize a logger for logging messages
 private val logger = KotlinLogging.logger {}
 
-var lastMediaId = 0 //MediaID incrementation
-var lastCustomerId = 0 //CustomerID incrementation
 fun main() = runMenu()
 
 fun runMenu() {
@@ -30,7 +28,9 @@ fun runMenu() {
             5 -> returnRentedMedia()
             6 -> viewCustomer()
             0 -> exitApp()
-            998 -> secretStaffMenu()
+            997 -> loadAll()
+            998 -> saveAll()
+            999 -> secretStaffMenu()
             else -> println("Invalid menu choice: $option")
         }
     } while (true)
@@ -45,6 +45,7 @@ fun mainMenu() = readNextInt(
          > ║ ██║     ██║██║╚██╗██║██╔══╝  ██╔═══╝ ██║     ██╔══╝   ██╔██╗  ║
          > ║ ╚██████╗██║██║ ╚████║███████╗██║     ███████╗███████╗██╔╝ ██╗ ║
          > ║  ╚═════╝╚═╝╚═╝  ╚═══╝╚══════╝╚═╝     ╚══════╝╚══════╝╚═╝  ╚═╝ ║
+         > ║  Welcome to Cineplex - Please select a number & press 'Enter' ║
          > ╠═══════════════════════════════════════════════════════════════╣
          > ║  [1] View all available media to rent                         ║
          > ║  [2] Rent out media                                           ║
@@ -60,7 +61,14 @@ fun mainMenu() = readNextInt(
     )
 
 fun secretStaffMenu() {
-    val option = readNextInt(
+    val password = "secret"
+    val inputPassword = readNextLine("Enter the password: ")
+    if (inputPassword != password) {
+        println("Incorrect password. Access denied.")
+        return
+    }
+
+    val customerId = readNextInt(
         """
         > ╔═══════════════════════════════╗
         > ║                               ║
@@ -70,34 +78,42 @@ fun secretStaffMenu() {
         > ║   1) Add media                ║
         > ║   2) Update media             ║
         > ║   3) Delete media             ║
-        > ║   4) Save customer            ║
-        > ║   5) Save media               ║
-        > ║   6) Load customer            ║
-        > ║   7) Load media               ║
-        > ║   8) Back to main menu        ║
+        > ║   4) Save all databases       ║
+        > ║   5) Load all databases       ║
+        > ║   10) Back to main menu       ║
         > ╚═══════════════════════════════╝
         > ==>> """.trimMargin(">"))
 
-    when (option) {
+    when (customerId) {
         1 -> addMedia()
         2 -> updateMedia()
         3 -> deleteMedia()
-        4 -> saveCustomer()
-        5 -> saveMedia()
-        6 -> loadCustomer()
-        7 -> loadMedia()
-        8 -> runMenu()
-        else -> println("Invalid option entered: $option")
+        4 -> saveAll()
+        5 -> loadAll()
+        10 -> runMenu()
+        else -> println("Invalid option entered: $customerId")
     }
 }
 
+fun loadAll() {
+    loadCustomer()
+    loadMedia()
+}
+
+fun saveAll() {
+    saveCustomer()
+    saveMedia()
+}
+
+//Media functions
+
 fun addMedia() {
-    val mediaId = lastMediaId++
+    val mediaId = mediaAPI.numberOfMedias() +1
     val mediaTitle = readNextLine("Enter a title for the media: ")
     val mediaRuntime = readNextLine("Enter the runtime for the media: ")
     val mediaGenre = readNextLine("Enter the genre for the media: ")
     val isRented =
-        readNextLine("Is the media currently being rented? (yes/no): ").lowercase(Locale.getDefault()) == "yes"
+        readNextLine("Is the media currently being rented? (yes/no): ").lowercase(Locale.getDefault()) == "no"
     val isAdded = mediaAPI.add(
         Media(
             mediaId = mediaId,
@@ -137,21 +153,21 @@ fun updateMedia() {
         } else {
             println("There are no medias for this index number")
         }
+        secretStaffMenu()
     }
 }
 
 
 fun deleteMedia() {
     if (mediaAPI.numberOfMedias() > 0) {
-        // only ask the user to choose the media to delete if medias exist
         val id = readNextInt("Enter the id of the media to delete: ")
-        // pass the index of the media to MediaAPI for deleting and check for success.
         val mediaToDelete = mediaAPI.delete(id)
         if (mediaToDelete) {
             println("Delete Successful!")
         } else {
             println("Delete NOT Successful")
         }
+        secretStaffMenu()
     }
 }
 
@@ -169,32 +185,63 @@ fun searchMedias() {
 
 fun rentMediaMenu() {
     val customerId = readNextInt("Enter the customer id: ")
-    val mediaId = readNextInt("Enter the media id to rent: ")
     val customer = customerAPI.findCustomer(customerId)
-    val media = mediaAPI.findMedia(mediaId)
-    if (customer != null && media != null && !media.isRented) {
-        customer.rentedMedia.add(mediaId)
-        media.isRented = true
-        println("Media rented successfully.")
+    if (customer != null) {
+        println("All media: ")
+        for (mediaId in customer.rentedMedia) {
+            val media = mediaAPI.findMedia(mediaId)
+            if (media != null) {
+                println("Media ID: $mediaId, Title: ${media.mediaTitle}, Available: ${!media.isRented}")
+            }
+        }
+        do {
+            val mediaId = readNextInt("Enter the media id to rent (or -1 to stop): ")
+            if (mediaId == -1) {
+                break
+            }
+            val media = mediaAPI.findMedia(mediaId)
+            if (media != null && !media.isRented) {
+                customer.rentedMedia.add(mediaId)
+                media.isRented = true
+                println("Media rented successfully. Enjoy!")
+            } else {
+                println("Failed to rent media. It might not be available to rent.")
+            }
+        } while (true)
     } else {
-        println("Failed to rent media.")
+        println("Customer not found.")
     }
 }
 
 fun returnRentedMedia() {
     val customerId = readNextInt("Enter the customer id: ")
-    val mediaId = readNextInt("Enter the media id to return: ")
     val customer = customerAPI.findCustomer(customerId)
-    val media = mediaAPI.findMedia(mediaId)
-    if (customer != null && media != null && media.isRented) {
-        customer.rentedMedia.remove(mediaId)
-        media.isRented = false
-        println("Media returned successfully.")
+    if (customer != null) {
+        println("Currently rented media by the customer: ")
+        for (mediaId in customer.rentedMedia) {
+            val media = mediaAPI.findMedia(mediaId)
+            if (media != null) {
+                println("Media ID: $mediaId, Title: ${media.mediaTitle}")
+            }
+        }
+        do {
+            val mediaId = readNextInt("Enter the media id to return (or -1 to stop): ")
+            if (mediaId == -1) {
+                break
+            }
+            val media = mediaAPI.findMedia(mediaId)
+            if (media != null && media.isRented) {
+                customer.rentedMedia.remove(mediaId)
+                media.isRented = false
+                println("Media returned successfully. Hope you enjoyed!")
+            } else {
+                println("Failed to return media. Please try again later.")
+            }
+        } while (true)
     } else {
-        println("Failed to return media.")
+        println("Customer not found.")
     }
 }
-
 
 // Customer functions
 
@@ -209,7 +256,7 @@ fun viewCustomer() {
 }
 
 fun createNewCustomer() {
-    val customerId = lastCustomerId++
+    val customerId = customerAPI.numberOfCustomers() + 1
     val fName = readNextLine("Enter the first name of the customer: ")
     val lName = readNextLine("Enter the last name of the customer: ")
     val email = readNextLine("Enter the email of the customer: ")
@@ -232,7 +279,7 @@ fun createNewCustomer() {
     }
 }
 
-
+// Persistence functions
 
 fun saveCustomer() {
     try {

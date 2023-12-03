@@ -25,28 +25,9 @@ class CustomerAPI(private val serializerType: Serializer) {
         return customers.add(customer)
     }
 
-
-    fun delete(id: Int) = customers.removeIf { customer -> customer.customerId == id }
-
-    fun update(id: Int, customer: Customer?): Boolean {
-        val foundCustomer = findCustomer(id)
-
-        if ((foundCustomer != null) && (customer != null)) {
-            foundCustomer.fName = customer.fName
-            foundCustomer.lName = customer.lName
-            foundCustomer.email = customer.email
-            foundCustomer.phoneNo = customer.phoneNo
-            foundCustomer.postCode = customer.postCode
-            return true
-        }
-
-        return false
-    }
-
     fun listAllCustomers() =
         if (customers.isEmpty()) "No customers stored"
         else formatListString(customers)
-
 
     fun numberOfCustomers() = customers.size
 
