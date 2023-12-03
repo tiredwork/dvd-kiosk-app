@@ -4,7 +4,7 @@ import models.Customer
 import persistence.Serializer
 import java.util.ArrayList
 
-class CustomerAPI(serializerType: Serializer) {
+class CustomerAPI(private val serializerType: Serializer) {
 
     // Private properties
     private var serializer: Serializer = serializerType
@@ -24,6 +24,7 @@ class CustomerAPI(serializerType: Serializer) {
         customer.customerId = getId()
         return customers.add(customer)
     }
+
 
     fun delete(id: Int) = customers.removeIf { customer -> customer.customerId == id }
 
@@ -53,7 +54,6 @@ class CustomerAPI(serializerType: Serializer) {
         return customers.find { customer -> customer.customerId == customerId }
 
     }
-
     @Throws(Exception::class)
     fun load() {
         customers = serializer.read() as ArrayList<Customer>

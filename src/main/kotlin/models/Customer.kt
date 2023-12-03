@@ -1,5 +1,8 @@
 package models
 
+import controllers.MediaAPI
+import persistence.Serializer
+
 data class Customer(
     var customerId: Int,
     var fName: String,
@@ -7,14 +10,50 @@ data class Customer(
     var email: String,
     var phoneNo: String,
     var postCode: String,
+    var rentedMedia: MutableList<Int> = mutableListOf()
 ) {
+
+class CustomerAPI(private val mediaAPI: MediaAPI, serializerType: Serializer) {
+
     private val customers = mutableListOf<Customer>()
     private var lastCustomerId = 0
     private fun getNextCustomerId() = lastCustomerId++
 
     private var rentedMediaList = mutableListOf<Media>()
-    override fun toString(): String {
-        return "$customerId: Name: $fName $lName, Email: $email, Phone: $phoneNo, Postcode: $postCode"
+
+    fun rentMedia(customerId: Int, mediaId: Int): Boolean {
+        val customer = customers.find { it.customerId == customerId }
+        val media = mediaAPI.findMedia(mediaId)
+
+        return if (customer != null && media != null && !media.isRented) {
+            customer.rentedMedia.add(mediaId)
+            media.isRented = true
+            println("Media rented successfully")
+            true
+        } else {
+            println("Failed to rent media")
+            false
+        }
+    }
+
+    fun returnMedia(customerId: Int, mediaId: Int): Boolean {
+        val customer = customers.find { it.customerId == customerId }
+        val media = mediaAPI.findMedia(mediaId)
+
+        return if (customer != null && media != null && media.isRented) {
+            customer.rentedMedia.remove(mediaId)
+            media.isRented = false
+            println("Media returned successfully")
+            true
+        } else {
+            println("Failed to return media")
+            false
+        }
+    }
+
+    fun getRentedMedia(customerId: Int): List<Media> {
+        val customer = customers.find { it.customerId == customerId }
+        return customer?.rentedMedia?.mapNotNull { mediaId -> mediaAPI.findMedia(mediaId) } ?: emptyList()
     }
 
     fun addRentals(media: Media) {
@@ -26,15 +65,17 @@ data class Customer(
     }
 
     fun updateCustomer(updatedCustomer: Customer): Boolean {
-        if (customerId == updatedCustomer.customerId) {
-            fName = updatedCustomer.fName
-            lName = updatedCustomer.lName
-            email = updatedCustomer.email
-            phoneNo = updatedCustomer.phoneNo
-            postCode = updatedCustomer.postCode
-            return true
+        val customer = customers.find { it.customerId == updatedCustomer.customerId }
+        return if (customer != null) {
+            customer.fName = updatedCustomer.fName
+            customer.lName = updatedCustomer.lName
+            customer.email = updatedCustomer.email
+            customer.phoneNo = updatedCustomer.phoneNo
+            customer.postCode = updatedCustomer.postCode
+            true
+        } else {
+            false
         }
-        return false
     }
 
     fun listCustomers() {
@@ -42,22 +83,20 @@ data class Customer(
             println(customer.toString())
         }
     }
+
     fun deleteRentals(mediaId: Int): Boolean {
         val mediaToRemove = rentedMediaList.find { media -> media.mediaId == mediaId }
         return mediaToRemove?.let { media -> rentedMediaList.remove(media) } ?: false
     }
 
     fun returnRentedMedia(media: Media) {
-        if (rentedMediaList.contains(media)) {
-            rentedMediaList.remove(media)
+        val customer = customers.find { it.rentedMedia.contains(media.mediaId) }
+        if (customer != null && media.isRented) {
+            customer.rentedMedia.remove(media.mediaId)
+            media.isRented = false
             println("Media returned successfully.")
         } else {
-            println("This media item is not in the customer's rented list.")
+            println("This media item is not in the customer's rented list or it was not rented.")
         }
     }
-
-    fun joinToString(separator: String, param: (Any) -> String): String {
-        return "Customer ID: $customerId, First Name: $fName, Last Name: $lName, Email: $email, Phone Number: $phoneNo, Postcode: $postCode"
-    }
-
-}
+}}

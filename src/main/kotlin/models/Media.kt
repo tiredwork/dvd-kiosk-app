@@ -6,7 +6,8 @@ data class Media(var mediaId: Int,
                  var mediaTitle: String,
                  var mediaRuntime: String,
                  var mediaGenre: String,
-                 var isRented: Boolean)
+                 var isRented: Boolean,
+)
 {
 
     override fun toString(): String {
@@ -16,5 +17,4 @@ data class Media(var mediaId: Int,
     fun formatListString(list: List<Any>): String {
         return list.joinToString("\n")
     }
-
 }
