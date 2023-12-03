@@ -9,7 +9,7 @@ data class Media(
 ) {
 
     override fun toString(): String {
-        return "Media ID: $mediaId: '$mediaTitle', Runtime: '$mediaRuntime', Category: '$mediaGenre', Is it Rented?: $isRented"
+        return "Media ID: $mediaId: '$mediaTitle', Runtime: '$mediaRuntime', Genre: '$mediaGenre', Is it Rented?: $isRented"
     }
 
     fun formatListString(list: List<Any>): String {

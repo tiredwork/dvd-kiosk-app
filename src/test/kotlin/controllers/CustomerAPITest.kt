@@ -1,5 +1,5 @@
-import controllers.CustomerAPI
-import controllers.MediaAPI
+package controllers
+
 import models.Customer
 import models.Media
 import org.junit.jupiter.api.AfterEach
