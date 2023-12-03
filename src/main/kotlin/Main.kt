@@ -8,6 +8,7 @@ import utils.ScannerInput.readNextInt
 import utils.ScannerInput.readNextLine
 import java.io.File
 import java.util.Locale
+import java.util.regex.Pattern
 import kotlin.system.exitProcess
 
 private val mediaAPI = MediaAPI(JSONSerializer(File("media.json")))
@@ -42,9 +43,9 @@ fun runMenu() {
             5 -> returnRentedMedia()
             6 -> viewCustomer()
             0 -> exitApp()
-            997 -> loadAll()
-            998 -> saveAll()
-            999 -> secretStaffMenu()
+            997 -> loadAll() //Debug Load all
+            998 -> saveAll() //Debug Save all
+            999 -> secretStaffMenu() //Secret Staff menu
             else -> println("Invalid menu choice: $option")
         }
     } while (true)
@@ -235,12 +236,7 @@ fun rentMediaMenu() {
     val customer = customerAPI.findCustomer(customerId)
     if (customer != null) {
         println("All media: ")
-        for (mediaId in customer.rentedMedia) {
-            val media = mediaAPI.findMedia(mediaId)
-            if (media != null) {
-                println("Media ID: $mediaId, Title: ${media.mediaTitle}, Available: ${!media.isRented}")
-            }
-        }
+        println(mediaAPI.listAllMedias())
         do {
             val mediaId = readNextInt("Enter the media id to rent (or -1 to stop): ")
             if (mediaId == -1) {
@@ -311,11 +307,16 @@ fun viewCustomer() {
 /**
  * Function to create a new customer.
  */
+
 fun createNewCustomer() {
     val customerId = customerAPI.numberOfCustomers() + 1
     val fName = readNextLine("Enter the first name of the customer: ")
     val lName = readNextLine("Enter the last name of the customer: ")
-    val email = readNextLine("Enter the email of the customer: ")
+    var email = readNextLine("Enter the email of the customer: ")
+    while (!isValidEmail(email)) {
+        println("Invalid email address. Please enter a valid email.")
+        email = readNextLine("Enter the email of the customer: ")
+    }
     val phoneNo = readNextLine("Enter the phone number of the customer: ")
     val postCode = readNextLine("Enter the postal code of the customer: ")
     val customer = Customer(
@@ -334,6 +335,21 @@ fun createNewCustomer() {
         println("Failed to add customer")
     }
 }
+
+// https://stackoverflow.com/questions/72117435/kotlin-android-email-validation
+val EMAIL_ADDRESS_PATTERN = Pattern.compile(
+    "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+            "\\@" +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+            "(" +
+            "\\." +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+            ")+"
+)
+fun isValidEmail(str: String): Boolean{
+    return EMAIL_ADDRESS_PATTERN.matcher(str).matches()
+}
+
 
 // Persistence functions
 
