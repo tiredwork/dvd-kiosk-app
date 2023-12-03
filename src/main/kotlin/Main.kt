@@ -19,13 +19,17 @@ var isDataLoaded = false
 /**
  * The main function that runs the menu.
  */
-fun main() = runMenu()
+fun main() {
+    logger.info { "Application started" }
+    runMenu()
+}
 
 /**
  * Function to run the main menu.
  */
 fun runMenu() {
     if (!isDataLoaded) {
+        logger.info { "Loading all data" }
         loadAll()
         isDataLoaded = true
     }
@@ -154,9 +158,9 @@ fun addMedia() {
     )
 
     if (isAdded) {
-        println("Added Successfully")
+        println("Media added successfully")
     } else {
-        println("Add Failed")
+        println("Media failed to be added. Please try again later")
     }
     secretStaffMenu()
 }
@@ -178,12 +182,12 @@ fun updateMedia() {
             media.mediaGenre = mediaGenre
 
             if (mediaAPI.update(id, media)) {
-                println("Update Successful")
+                println("Media update successful")
             } else {
-                println("Update Failed")
+                println("Media failed to update. Please try again later")
             }
         } else {
-            println("There are no media found.")
+            println("No media found. Please try again later")
         }
         secretStaffMenu()
     }
@@ -194,12 +198,12 @@ fun updateMedia() {
  */
 fun deleteMedia() {
     if (mediaAPI.numberOfMedias() > 0) {
-        val id = readNextInt("Enter the id of the media to delete: ")
+        val id = readNextInt("Enter the ID of the media to delete: ")
         val mediaToDelete = mediaAPI.delete(id)
         if (mediaToDelete) {
-            println("Delete Successful!")
+            println("Media Deleted Successfully!")
         } else {
-            println("Delete NOT Successful")
+            println("Failed to delete media. Please try again later")
         }
         secretStaffMenu()
     }
@@ -217,7 +221,7 @@ fun searchMedias() {
     val searchTitle = readNextLine("Enter the description to search by: ")
     val searchResults = mediaAPI.searchMediasByTitle(searchTitle)
     if (searchResults.isEmpty()) {
-        println("No medias found")
+        println("Your search did not return any results")
     } else {
         println(searchResults)
     }
