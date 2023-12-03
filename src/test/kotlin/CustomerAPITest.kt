@@ -146,9 +146,53 @@ class CustomerAPITest {
         inner class CountingMethods {
 
             @Test
-            fun numberOfCustomersCalculatedCorrectly() {
+            fun `Count number of customers when populated and empty`() {
                 assertEquals(5, populatedCustomers!!.numberOfCustomers())
                 assertEquals(0, emptyCustomers!!.numberOfCustomers())
+            }
+        }
+
+        @Nested
+        inner class GetterAndSetterTests {
+
+            @Test
+            fun `Customer getter tests`() {
+                val customer = Customer(0, "Jane", "Smith", "jane.smith@email.com", "123-456-789", "12345", mutableListOf())
+                assertEquals(0, customer.customerId)
+                assertEquals("Jane", customer.fName)
+                assertEquals("Smith", customer.lName)
+                assertEquals("jane.smith@email.com", customer.email)
+                assertEquals("123-456-789", customer.phoneNo)
+                assertEquals("12345", customer.postCode)
+                assertTrue(customer.rentedMedia.isEmpty())
+            }
+
+            @Test
+            fun `Customer setter tests`() {
+                val customer = Customer(0, "Jane", "Smith", "jane.smith@email.com", "123-456-789", "12345", mutableListOf(0))
+                customer.fName = "Jane"
+                customer.lName = "Smith"
+                customer.email = "jane.smith@email.com"
+                customer.phoneNo = "123-456-789"
+                customer.postCode = "12345"
+                customer.rentedMedia.add(1)
+                assertEquals("Jane", customer.fName)
+                assertEquals("Smith", customer.lName)
+                assertEquals("jane.smith@email.com", customer.email)
+                assertEquals("123-456-789", customer.phoneNo)
+                assertEquals("12345", customer.postCode)
+                assertEquals(2, customer.rentedMedia.size)
+                assertTrue(customer.rentedMedia.contains(1))
+            }
+        }
+        @Nested
+        inner class StringFormat {
+            @Test
+            fun `Testing formatListString`() {
+                val customer = Customer(0, "Jane", "Smith", "jane.smith@email.com", "123-456-789", "12345", rentedMedia = mutableListOf(0, 1))
+                val list = listOf("Jane", "Bob", "Alice")
+                val expected = "Jane\nBob\nAlice"
+                assertEquals(expected, customer.formatListString(list))
             }
         }
     }

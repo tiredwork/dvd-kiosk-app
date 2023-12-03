@@ -2,6 +2,7 @@ import controllers.CustomerAPI
 import controllers.MediaAPI
 import models.Media
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -15,37 +16,37 @@ class MediaAPITest {
     private lateinit var mediaAPI: MediaAPI
     private lateinit var customerAPI: CustomerAPI
 
-    private var media0: Media? = null
-    private var media1: Media? = null
-    private var media2: Media? = null
-    private var media3: Media? = null
-    private var media4: Media? = null
+    private var joker: Media? = null
+    private var spiderman: Media? = null
+    private var johnWick: Media? = null
+    private var metallica: Media? = null
+    private var taylorSwift: Media? = null
 
     @BeforeEach
     fun setup() {
         mediaAPI = MediaAPI(JSONSerializer(File("mediaTest.json")))
         customerAPI = CustomerAPI(JSONSerializer(File("customerTest.json")))
 
-        media0 = Media(0, "Joker", "122 mins", "Feature, Drama", false)
-        media1 = Media(1, "Spider-Man: Homecoming", "133 mins", "Feature, Adventure", false)
-        media2 = Media(2, "John Wick: Chapter 3 - Parabellum ", "131 mins", "Feature, Action", false)
-        media3 = Media(3, "Master of Puppets - Metallica", "54 mins", "Thrash Metal", false)
-        media4 = Media(4, "1989 - Taylor Swift", "48 mins", "Synth-pop", false)
+        joker = Media(0, "Joker", "122 mins", "Feature, Drama", false)
+        spiderman = Media(1, "Spider-Man: Homecoming", "133 mins", "Feature, Adventure", false)
+        johnWick = Media(2, "John Wick: Chapter 3 - Parabellum ", "131 mins", "Feature, Action", false)
+        metallica = Media(3, "Master of Puppets - Metallica", "54 mins", "Thrash Metal", false)
+        taylorSwift = Media(4, "1989 - Taylor Swift", "48 mins", "Synth-pop", false)
 
-        mediaAPI.add(media0!!)
-        mediaAPI.add(media1!!)
-        mediaAPI.add(media2!!)
-        mediaAPI.add(media3!!)
-        mediaAPI.add(media4!!)
+        mediaAPI.add(joker!!)
+        mediaAPI.add(spiderman!!)
+        mediaAPI.add(johnWick!!)
+        mediaAPI.add(metallica!!)
+        mediaAPI.add(taylorSwift!!)
     }
 
     @AfterEach
     fun tearDown() {
-        media0 = null
-        media1 = null
-        media2 = null
-        media3 = null
-        media4 = null
+        joker = null
+        spiderman = null
+        johnWick = null
+        metallica = null
+        taylorSwift = null
     }
 
     @Nested
@@ -103,6 +104,48 @@ class MediaAPITest {
                 assertTrue(mediaString.contains("48 mins"))
                 assertTrue(mediaString.contains("synth-pop"))
             }
+        }
+    }
+
+    @Nested
+    inner class MediaGetterAndSetterTests {
+
+        @Test
+        fun testMediaGetters() {
+            val media = Media(0, "Joker", "122 mins", "Feature, Drama", false)
+            assertEquals(0, media.mediaId)
+            assertEquals("Joker", media.mediaTitle)
+            assertEquals("122 mins", media.mediaRuntime)
+            assertEquals("Feature, Drama", media.mediaGenre)
+            assertEquals(false, media.isRented)
+            assertFalse(media.isRented)
+        }
+
+        @Test
+        fun `Customer setter tests`() {
+            val media = Media(0, "Joker", "122 mins", "Feature, Drama", false)
+            media.mediaId = 0
+            media.mediaTitle = "Joker"
+            media.mediaRuntime = "122 mins"
+            media.mediaGenre = "Feature, Drama"
+            media.isRented = false
+            assertEquals(0, media.mediaId)
+            assertEquals("Joker", media.mediaTitle)
+            assertEquals("122 mins", media.mediaRuntime)
+            assertEquals("Feature, Drama", media.mediaGenre)
+            assertEquals(false, media.isRented)
+            assertFalse(media.isRented)
+        }
+    }
+
+    @Nested
+    inner class StringFormat {
+        @Test
+        fun `Testing formatListString`() {
+            val media = Media(0, "Joker", "122 mins", "Feature, Drama", false)
+            val list = listOf("Joker", "Spider-Man", "John Wick")
+            val expected = "Joker\nSpider-Man\nJohn Wick"
+            assertEquals(expected, media.formatListString(list))
         }
     }
 }
