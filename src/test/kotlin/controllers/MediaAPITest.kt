@@ -22,6 +22,9 @@ class MediaAPITest {
     private var metallica: Media? = null
     private var taylorSwift: Media? = null
 
+    /**
+     * This method is executed before each test. It sets up the test environment.
+     */
     @BeforeEach
     fun setup() {
         mediaAPI = MediaAPI(JSONSerializer(File("mediaTest.json")))
@@ -40,6 +43,9 @@ class MediaAPITest {
         mediaAPI.add(taylorSwift!!)
     }
 
+    /**
+     * This method is executed after each test. It cleans up the test environment.
+     */
     @AfterEach
     fun tearDown() {
         joker = null
@@ -52,6 +58,9 @@ class MediaAPITest {
     @Nested
     inner class AddMedia {
 
+        /**
+         * Test case for adding a Media to a populated list.
+         */
         @Test
         fun `adding a Media to a populated list adds to ArrayList`() {
             val newMedia = Media(5, "Joker", "122 mins", "Feature, Drama", false)
@@ -61,6 +70,9 @@ class MediaAPITest {
             assertEquals(newMedia, mediaAPI.findMedia(5))
         }
 
+        /**
+         * Test case for adding a Media to an empty list.
+         */
         @Test
         fun `adding a Media to an empty list adds to ArrayList`() {
             val mediaAPIEmpty = MediaAPI(JSONSerializer(File("mediaTest.json")))
@@ -77,6 +89,9 @@ class MediaAPITest {
 
         @Nested
         inner class ListAllMedia {
+            /**
+             * Test case for listing all media when ArrayList is empty.
+             */
             @Test
             fun `listAllMedia returns No Media Stored message when ArrayList is empty`() {
                 val mediaAPIEmpty = MediaAPI(JSONSerializer(File("mediaTest.json")))
@@ -84,6 +99,9 @@ class MediaAPITest {
                 assertTrue(mediaAPIEmpty.listAllMedias().lowercase().contains("no medias stored"))
             }
 
+            /**
+             * Test case for listing all media when ArrayList has Media stored.
+             */
             @Test
             fun `listAllMedia returns Media when ArrayList has Media stored`() {
                 assertEquals(5, mediaAPI.numberOfMedias())
@@ -110,6 +128,9 @@ class MediaAPITest {
     @Nested
     inner class MediaGetterAndSetterTests {
 
+        /**
+         * Test case for Media getter methods.
+         */
         @Test
         fun testMediaGetters() {
             val media = Media(0, "Joker", "122 mins", "Feature, Drama", false)
@@ -121,6 +142,9 @@ class MediaAPITest {
             assertFalse(media.isRented)
         }
 
+        /**
+         * Test case for Media setter methods.
+         */
         @Test
         fun `Customer setter tests`() {
             val media = Media(0, "Joker", "122 mins", "Feature, Drama", false)
@@ -140,6 +164,9 @@ class MediaAPITest {
 
     @Nested
     inner class StringFormat {
+        /**
+         * Test case for formatting a list into a string.
+         */
         @Test
         fun `Testing formatListString`() {
             val media = Media(0, "Joker", "122 mins", "Feature, Drama", false)

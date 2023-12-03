@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test
 
 class MediaTest {
 
+    /**
+     * Test case for the toString method of the Media class.
+     */
     @Test
     fun `test toString method`() {
         val media = Media(0, "Joker", "122 mins", "Feature, Drama", false)
@@ -12,6 +15,9 @@ class MediaTest {
         assertEquals(expected, media.toString())
     }
 
+    /**
+     * Test case for the formatListString method of the Media class.
+     */
     @Test
     fun `test formatListString method`() {
         val media = Media(0, "Joker", "122 mins", "Feature, Drama", false)
