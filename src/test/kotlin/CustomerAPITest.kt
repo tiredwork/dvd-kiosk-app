@@ -2,11 +2,14 @@ import controllers.CustomerAPI
 import controllers.MediaAPI
 import models.Customer
 import models.Media
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import persistence.JSONSerializer
 import java.io.File
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class CustomerAPITest {
 
@@ -29,10 +32,10 @@ class CustomerAPITest {
         mediaAPI.add(Media(0, "Media 0", "Runtime 0", "Genre 0", false))
         mediaAPI.add(Media(1, "Media 1", "Runtime 1", "Genre 1", false))
 
-        janeSmith = Customer(0, "Jane", "Smith", "jane.smith@email.com", "123-456-789", "12345", rentedMedia = mutableListOf(0,1))
+        janeSmith = Customer(0, "Jane", "Smith", "jane.smith@email.com", "123-456-789", "12345", rentedMedia = mutableListOf(0, 1))
         bobWilliams = Customer(1, "Bob", "Williams", "bob.williams@email.com", "123-456-789", "12346", rentedMedia = mutableListOf(0))
         aliceJohnson = Customer(2, "Alice", "Johnson", "alice.johnson@email.com", "123-456-789", "12347", rentedMedia = mutableListOf(1))
-        charlieBrown = Customer(3, "Charlie", "Brown", "charlie.brown@email.com", "123-456-789", "12348", rentedMedia = mutableListOf(1,0))
+        charlieBrown = Customer(3, "Charlie", "Brown", "charlie.brown@email.com", "123-456-789", "12348", rentedMedia = mutableListOf(1, 0))
         davidSmith = Customer(4, "David", "Smith", "david.smith@email.com", "123-456-789", "12349", rentedMedia = mutableListOf())
 
         populatedCustomers!!.add(janeSmith!!)
@@ -102,51 +105,51 @@ class CustomerAPITest {
                 assertTrue(customersString.contains("smith"))
             }
         }
-    @Nested
-    inner class PersistenceTests {
 
-        @Test
-        fun `saving and loading an empty collection in JSON doesn't crash app`() {
-            val storingCustomers = CustomerAPI(JSONSerializer(File("customerTest.json")))
-            storingCustomers.save()
+        @Nested
+        inner class PersistenceTests {
 
-            val loadedCustomers = CustomerAPI(JSONSerializer(File("customerTest.json")))
-            loadedCustomers.load()
+            @Test
+            fun `saving and loading an empty collection in JSON doesn't crash app`() {
+                val storingCustomers = CustomerAPI(JSONSerializer(File("customerTest.json")))
+                storingCustomers.save()
 
-            assertEquals(0, storingCustomers.numberOfCustomers())
-            assertEquals(0, loadedCustomers.numberOfCustomers())
-            assertEquals(storingCustomers.numberOfCustomers(), loadedCustomers.numberOfCustomers())
+                val loadedCustomers = CustomerAPI(JSONSerializer(File("customerTest.json")))
+                loadedCustomers.load()
+
+                assertEquals(0, storingCustomers.numberOfCustomers())
+                assertEquals(0, loadedCustomers.numberOfCustomers())
+                assertEquals(storingCustomers.numberOfCustomers(), loadedCustomers.numberOfCustomers())
+            }
+
+            @Test
+            fun `saving and loading an loaded collection in JSON doesn't lose data`() {
+                val storingCustomers = CustomerAPI(JSONSerializer(File("customerTest.json")))
+                storingCustomers.add(janeSmith!!)
+                storingCustomers.add(bobWilliams!!)
+                storingCustomers.add(aliceJohnson!!)
+                storingCustomers.save()
+
+                val loadedCustomers = CustomerAPI(JSONSerializer(File("customerTest.json")))
+                loadedCustomers.load()
+
+                assertEquals(3, storingCustomers.numberOfCustomers())
+                assertEquals(3, loadedCustomers.numberOfCustomers())
+                assertEquals(storingCustomers.numberOfCustomers(), loadedCustomers.numberOfCustomers())
+                assertEquals(storingCustomers.findCustomer(0), loadedCustomers.findCustomer(0))
+                assertEquals(storingCustomers.findCustomer(1), loadedCustomers.findCustomer(1))
+                assertEquals(storingCustomers.findCustomer(2), loadedCustomers.findCustomer(2))
+            }
         }
 
-        @Test
-        fun `saving and loading an loaded collection in JSON doesn't lose data`() {
-            val storingCustomers = CustomerAPI(JSONSerializer(File("customerTest.json")))
-            storingCustomers.add(janeSmith!!)
-            storingCustomers.add(bobWilliams!!)
-            storingCustomers.add(aliceJohnson!!)
-            storingCustomers.save()
+        @Nested
+        inner class CountingMethods {
 
-
-            val loadedCustomers = CustomerAPI(JSONSerializer(File("customerTest.json")))
-            loadedCustomers.load()
-
-
-            assertEquals(3, storingCustomers.numberOfCustomers())
-            assertEquals(3, loadedCustomers.numberOfCustomers())
-            assertEquals(storingCustomers.numberOfCustomers(), loadedCustomers.numberOfCustomers())
-            assertEquals(storingCustomers.findCustomer(0), loadedCustomers.findCustomer(0))
-            assertEquals(storingCustomers.findCustomer(1), loadedCustomers.findCustomer(1))
-            assertEquals(storingCustomers.findCustomer(2), loadedCustomers.findCustomer(2))
+            @Test
+            fun numberOfCustomersCalculatedCorrectly() {
+                assertEquals(5, populatedCustomers!!.numberOfCustomers())
+                assertEquals(0, emptyCustomers!!.numberOfCustomers())
+            }
         }
     }
-    @Nested
-    inner class CountingMethods {
-
-        @Test
-        fun numberOfCustomersCalculatedCorrectly() {
-            assertEquals(5, populatedCustomers!!.numberOfCustomers())
-            assertEquals(0, emptyCustomers!!.numberOfCustomers())
-        }
-    }
-}
 }

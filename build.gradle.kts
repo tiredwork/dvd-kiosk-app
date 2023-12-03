@@ -1,10 +1,16 @@
 plugins {
-    kotlin("jvm") version "1.9.21"
+    kotlin("jvm") version "1.9.0"
+    // Plugin for Dokka - KDoc generating tool
+    id("org.jetbrains.dokka") version "1.9.10"
+    // Code coverage tool
+    jacoco
+    // Plugin for Ktlint
+    id("org.jlleitschuh.gradle.ktlint") version "11.3.1"
     application
 }
 
 group = "ie.setu"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -25,10 +31,14 @@ dependencies {
     // https://mvnrepository.com/artifact/org.codehaus.jettison/jettison
     implementation("org.codehaus.jettison:jettison:1.5.4")
 
+    // For generating a Dokka Site from KDoc
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.9.10")
 }
 
 tasks.test {
     useJUnitPlatform()
+    // report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 kotlin {
@@ -37,4 +47,15 @@ kotlin {
 
 application {
     mainClass.set("MainKt")
+}
+
+tasks.jar {
+    manifest.attributes["Main-Class"] = "MainKt"
+    // for building a fat jar - include all dependencies
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
 }
