@@ -1,6 +1,6 @@
 # dvd-kiosk-app
 
-This is a project for the Software Development Tools assignment 3. It is a rental kiosk system allowing you to view and rent media like movies, CDs, and vinyls.
+This is a project for the Software Development Tools assignment 3. It is a rental kiosk system allowing you to view and rent media like movies, CDs, and vinyls. it also had a backend staff menu allowing you to update and remove media from the system.
  
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -15,7 +15,7 @@ To run this app, you will need to build it using Gradle. This is a command line 
 ## Usage
 
 When you run the app, you will get a menu and you have to input a corresponding number to selet the menu option.
-You can then do various functions like browsing and renting media, and viewing your account. Staff members can also add, update and delete media on the system.
+You can then do various functions like browsing and renting media, and creating and viewing your account details. Staff members can also add, update and delete media on the system.
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
