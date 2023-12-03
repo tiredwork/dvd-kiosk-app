@@ -1,1 +1,1 @@
-{"object-stream":{"list":[{"models.Media":[{"mediaId":0,"mediaTitle":"Oceans Eleven","mediaRuntime":"108 mins","mediaGenre":"Crime","isRented":true},{"mediaId":1,"mediaTitle":"Slumdog Millionaire","mediaRuntime":"101 mins","mediaGenre":"Comedy","isRented":true}]}]}}
+{"object-stream":{"list":[{"models.Media":[{"mediaId":0,"mediaTitle":"Oceans Eleven","mediaRuntime":"108 mins","mediaGenre":"Crime","isRented":true},{"mediaId":1,"mediaTitle":"Slumdog Millionaire","mediaRuntime":"101 mins","mediaGenre":"Comedy","isRented":false}]}]}}
