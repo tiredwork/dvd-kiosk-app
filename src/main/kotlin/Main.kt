@@ -13,12 +13,15 @@ import kotlin.system.exitProcess
 private val mediaAPI = MediaAPI(JSONSerializer(File("media.json")))
 private val customerAPI = CustomerAPI(JSONSerializer(File("customer.json")))
 
-// Initialize a logger for logging messages
 private val logger = KotlinLogging.logger {}
-
+var isDataLoaded = false
 fun main() = runMenu()
 
 fun runMenu() {
+    if (!isDataLoaded) {
+        loadAll()
+        isDataLoaded = true
+    }
     do {
         when (val option = mainMenu()) {
             1 -> listAllMedias()
@@ -68,7 +71,7 @@ fun secretStaffMenu() {
         return
     }
 
-    val customerId = readNextInt(
+    val secretStaffMenu = readNextInt(
         """
         > ╔═══════════════════════════════╗
         > ║                               ║
@@ -85,14 +88,14 @@ fun secretStaffMenu() {
         > ==>> """.trimMargin(">")
     )
 
-    when (customerId) {
+    when (secretStaffMenu) {
         1 -> addMedia()
         2 -> updateMedia()
         3 -> deleteMedia()
         4 -> saveAll()
         5 -> loadAll()
         10 -> runMenu()
-        else -> println("Invalid option entered: $customerId")
+        else -> println("Invalid option entered: $secretStaffMenu")
     }
 }
 
